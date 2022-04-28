@@ -14,11 +14,11 @@ struct UserInfoView: View {
     
     @State var name = ""
     
-    @State var birthdate = "Birthday"
+    @State private var birthdate = "Birthday"
     @State var birthdateDate = Date()
     
     let gendersArray = ["Male", "Female", "Others"]
-    @State private var gendersIndex = 0
+    @State var gendersIndex: Float = 0
     
     var body: some View {
         NavigationView {
@@ -137,7 +137,7 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text("Gender")
                             Spacer()
-                            Text(gendersArray[gendersIndex])
+                            Text(gendersArray[Int(gendersIndex)])
                         }
                         Divider()
                     }.padding()
