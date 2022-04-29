@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UserInfoView: View {
-    
+    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.presentationMode) var presentationMode
     @State private var isEdit = false
     
@@ -97,7 +97,9 @@ struct UserInfoView: View {
                         }.padding()
                     }
                 }
+                
             } else if self.isEdit == false {
+                
                 VStack {
                     Image("EXKx77VHXm4")
                         .resizable()
@@ -112,7 +114,6 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text(name)
                             Spacer()
-                                
                         }
                         Divider()
                     }.padding()
@@ -168,7 +169,6 @@ struct UserInfoView: View {
                     }
                 }
             }
-
         }
         .accentColor(Color.gray)
     }

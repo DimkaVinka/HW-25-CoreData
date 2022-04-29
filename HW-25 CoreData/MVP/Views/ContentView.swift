@@ -41,8 +41,7 @@ struct ContentView: View {
             }
         }
     }
-    
-    
+        
     var body: some View {
         NavigationView {
             VStack {
@@ -77,9 +76,6 @@ struct ContentView: View {
                             UserInfoView(name: name, birthdateDate: birthdateDate, gendersIndex: gendersIndex)
                         }
                     }
-                    
-                    
-
                 }
             }
             .navigationTitle(Text("Users"))
@@ -89,6 +85,8 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+        let persistentContainer = CoreDataManager.shared.persistentContainer
         ContentView()
+            .environment(\.managedObjectContext, persistentContainer.viewContext)
     }
 }
