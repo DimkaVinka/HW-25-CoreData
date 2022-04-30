@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct UserInfoView: View {
-    @Environment(\.managedObjectContext) private var viewContext
+    @State var user = User()
     @Environment(\.presentationMode) var presentationMode
     @State private var isEdit = false
     
@@ -35,11 +35,8 @@ struct UserInfoView: View {
                             Image(systemName: "person")
                                 .resizable()
                                 .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                            TextField("", text: $name)
-                                .placeholder(when: name.isEmpty) {
-                                    Text(name).foregroundColor(.gray)
-                                }
+                                .padding(.init(top: 0, leading: 0, bottom: 10, trailing: 10))
+                            TextField("Type your name", text: $name)
                         }
                         Divider()
                     }.padding()
@@ -112,7 +109,7 @@ struct UserInfoView: View {
                                 .resizable()
                                 .frame(width: 25, height: 25, alignment: .center)
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                            Text(name)
+                            Text(user.name ?? "")
                             Spacer()
                         }
                         Divider()
@@ -125,9 +122,8 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text("\(birthdate)")
                             Spacer()
-                            Text(birthdateDate, format: Date.FormatStyle().day().month().year())
+                            Text(user.birthdate ?? Date(), format: Date.FormatStyle().day().month().year())
                         }
-                        
                         Divider()
                     }.padding()
                     VStack(alignment: .leading) {
@@ -138,7 +134,7 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text("Gender")
                             Spacer()
-                            Text(gendersArray[Int(gendersIndex)])
+                            Text(gendersArray[Int(user.gender)])
                         }
                         Divider()
                     }.padding()
