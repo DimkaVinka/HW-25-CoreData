@@ -9,51 +9,47 @@ import Foundation
 import CoreData
 
 class CoreDataViewModel: ObservableObject {
-    let container: NSPersistentContainer
-    @Published var savedUsers: [User] = []
+    var name: String = ""
+    var birthdate: Date = .now
+    var gender: Float = 2
+    @Published var users: [UserViewModel] = []
     
-    init() {
-        container = NSPersistentContainer(name: "UsersModel")
-        container.loadPersistentStores { description, error in
-            if let error = error {
-                print("Error loading container \(error.localizedDescription)")
-            }
-        }
-        fetchUsers()
+    func save() {
+        let user = User(context: CoreDataManager.shared.viewContext)
+        user.name = name
+        user.birthdate = birthdate
+        user.gender = gender
+        CoreDataManager.shared.save()
     }
     
-    func fetchUsers() {
-        let request = NSFetchRequest<User>(entityName: "User")
-        
-        do {
-            savedUsers = try container.viewContext.fetch(request)
-        } catch let error {
-            print(error.localizedDescription)
-        }
+    func getAllUsers() {
+        users = CoreDataManager.shared.getAllUsers().map(UserViewModel.init)
     }
     
-    func addUser(name: String, birthdateDate: Date?, gender: Float?) {
-        let newUser = User(context: container.viewContext)
-        newUser.name = name
-        newUser.birthdate = birthdateDate
-        newUser.gender = gender ?? 2
-        
-        saveUser()
-    }
-    
-    func saveUser() {
-        do {
-            try container.viewContext.save()
-            fetchUsers()
-        } catch let error {
-            print("error to save data: \(error.localizedDescription)")
+    func delete(_ user: UserViewModel) {
+        let existingUser = CoreDataManager.shared.getUserByID(id: user.id)
+        if let existingUser = existingUser {
+            CoreDataManager.shared.deleteUser(user: existingUser)
         }
     }
+}
+
+struct UserViewModel {
+    var user: User
     
-    func deleteUser(indexSet: IndexSet) {
-        guard let index = indexSet.first else { return }
-        let entity = savedUsers[index]
-        container.viewContext.delete(entity)
-        saveUser()
+    var id: NSManagedObjectID {
+        return user.objectID
+    }
+    
+    var name: String {
+        return user.name ?? "NONAME"
+    }
+    
+    var birthdate: Date {
+        return user.birthdate ?? .now
+    }
+    
+    var gender: Float {
+        return user.gender
     }
 }

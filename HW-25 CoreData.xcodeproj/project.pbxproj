@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7D4A4DE3281E8AC30057710B /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4A4DE2281E8AC30057710B /* CoreDataManager.swift */; };
 		7DE0408E281A6FB200DE47E8 /* HW_25_CoreDataApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE0408D281A6FB200DE47E8 /* HW_25_CoreDataApp.swift */; };
 		7DE04090281A6FB200DE47E8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE0408F281A6FB200DE47E8 /* ContentView.swift */; };
 		7DE04092281A6FB400DE47E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7DE04091281A6FB400DE47E8 /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7D4A4DE2281E8AC30057710B /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		7DE0408A281A6FB200DE47E8 /* HW-25 CoreData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HW-25 CoreData.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7DE0408D281A6FB200DE47E8 /* HW_25_CoreDataApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HW_25_CoreDataApp.swift; sourceTree = "<group>"; };
 		7DE0408F281A6FB200DE47E8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				7DE040A9281AE7DB00DE47E8 /* UsersModel.xcdatamodeld */,
+				7D4A4DE2281E8AC30057710B /* CoreDataManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				7DE040A4281AE79D00DE47E8 /* CoreDataViewModel.swift in Sources */,
 				7DE0408E281A6FB200DE47E8 /* HW_25_CoreDataApp.swift in Sources */,
 				7DE040A8281AE7C300DE47E8 /* UserInfoView.swift in Sources */,
+				7D4A4DE3281E8AC30057710B /* CoreDataManager.swift in Sources */,
 				7DE040AB281AE7DB00DE47E8 /* UsersModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

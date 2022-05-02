@@ -8,22 +8,36 @@
 import SwiftUI
 
 struct UserInfoView: View {
-    @State var user = User()
-    @Environment(\.presentationMode) var presentationMode
+    
+    @State var user: UserViewModel
+    @State var viewModel: CoreDataViewModel
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+
     @State private var isEdit = false
     
-    @State var name = ""
+//    @State var name = ""
     
     @State private var birthdate = "Birthday"
-    @State var birthdateDate = Date()
+//    @State var birthdateDate = Date()
     
     let gendersArray = ["Male", "Female", "Others"]
-    @State var gendersIndex: Float = 0
+//    @State var gendersIndex: Float = 0
+    
+    var backButton : some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+            viewModel.getAllUsers()
+        }) {
+            Image(systemName: "xmark")
+        }
+    }
+    
     
     var body: some View {
         NavigationView {
             
             if self.isEdit == true {
+                // РЕЖИМ РЕДАКТИРОВАНИЯ ИНФОРМАЦИИ
                 VStack {
                     Image("EXKx77VHXm4")
                         .resizable()
@@ -36,7 +50,7 @@ struct UserInfoView: View {
                                 .resizable()
                                 .frame(width: 25, height: 25, alignment: .center)
                                 .padding(.init(top: 0, leading: 0, bottom: 10, trailing: 10))
-                            TextField("Type your name", text: $name)
+                            TextField("Type your name", text: $user.user.name.toUnwrapped(defaultValue: "NONAME"))
                         }
                         Divider()
                     }.padding()
@@ -47,7 +61,7 @@ struct UserInfoView: View {
                                 .frame(width: 25, height: 25, alignment: .center)
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             TextField("Birthday", text: $birthdate)
-                            DatePicker("", selection: $birthdateDate, displayedComponents: .date)
+                            DatePicker("", selection: $user.user.birthdate.toUnwrapped(defaultValue: .now), displayedComponents: .date)
                         }
                         
                         Divider()
@@ -60,8 +74,8 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text("Gender")
                             Spacer()
-                            Picker(selection: $gendersIndex, label: Text("Gender")) {
-                                ForEach(0..<gendersArray.count) {
+                            Picker(selection: $user.user.gender, label: Text("Gender")) {
+                                ForEach(0..<3) {
                                     Text(self.gendersArray[$0])
                                 }
                             }
@@ -70,17 +84,17 @@ struct UserInfoView: View {
                     }.padding()
                         Spacer()
                 }
+                
+                // MARK: - Toolbar for Save
+                
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            self.presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
+                        backButton
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         ZStack {
                             Button {
+                                viewModel.getAllUsers()
                                 self.isEdit.toggle()
                             } label: {
                                 Text("Save")
@@ -96,7 +110,7 @@ struct UserInfoView: View {
                 }
                 
             } else if self.isEdit == false {
-                
+            // РЕЖИМ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ
                 VStack {
                     Image("EXKx77VHXm4")
                         .resizable()
@@ -109,7 +123,7 @@ struct UserInfoView: View {
                                 .resizable()
                                 .frame(width: 25, height: 25, alignment: .center)
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                            Text(user.name ?? "")
+                            Text(user.user.name ?? "NONAME")
                             Spacer()
                         }
                         Divider()
@@ -122,7 +136,7 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text("\(birthdate)")
                             Spacer()
-                            Text(user.birthdate ?? Date(), format: Date.FormatStyle().day().month().year())
+                            Text(user.user.birthdate ?? .now, format: Date.FormatStyle().day().month().year())
                         }
                         Divider()
                     }.padding()
@@ -134,24 +148,24 @@ struct UserInfoView: View {
                                 .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
                             Text("Gender")
                             Spacer()
-                            Text(gendersArray[Int(user.gender)])
+                            Text(gendersArray[Int(user.user.gender)])
                         }
                         Divider()
                     }.padding()
                         Spacer()
                 }
+                
+                // MARK: - Toolbar for Edit
+                
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            self.presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
+                        backButton
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         ZStack {
                             Button {
                                 self.isEdit.toggle()
+                                viewModel.getAllUsers()
                             } label: {
                                 Text("Edit")
                                     .padding()
@@ -165,13 +179,14 @@ struct UserInfoView: View {
                     }
                 }
             }
-        }
+                
+        }.navigationBarBackButtonHidden(true)
         .accentColor(Color.gray)
     }
 }
 
 struct UserInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        UserInfoView()
+        UserInfoView(user: UserViewModel(user: User()), viewModel: CoreDataViewModel())
     }
 }

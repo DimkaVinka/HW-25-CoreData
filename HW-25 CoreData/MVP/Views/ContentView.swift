@@ -9,22 +9,26 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @StateObject var viewModel = CoreDataViewModel()
+    @StateObject private var viewModel = CoreDataViewModel()
     
-    @State private var name = ""
-    @State private var showModalView = false
-    private var birthdateDate = Date()
-    private var gendersIndex: Float = 0
+    func deleteUser(at offsets: IndexSet) {
+        offsets.forEach { index in
+            let user = viewModel.users[index]
+            viewModel.delete(user)
+        }
+        viewModel.getAllUsers()
+    }
         
     var body: some View {
         NavigationView {
             VStack {
-                TextField("Type your name here", text: $name)
+                TextField("Type your name here", text: $viewModel.name)
                     .textFieldStyle(.roundedBorder)
                     .padding()
                 Button {
-                    guard !name.isEmpty else { return }
-                    viewModel.addUser(name: name, birthdateDate: nil, gender: nil)
+                    guard !viewModel.name.isEmpty else { return }
+                    viewModel.save()
+                    viewModel.getAllUsers()
                 } label: {
                     VStack {
                         ZStack {
@@ -40,18 +44,18 @@ struct ContentView: View {
                     }
                 }
                 List {
-                    ForEach(viewModel.savedUsers) { user in
-                        Button {
-                            self.showModalView.toggle()
+                    ForEach(viewModel.users, id: \.id) { user in
+                        NavigationLink {
+                            UserInfoView(user: user, viewModel: viewModel)
                         } label: {
-                            Text(user.name ?? "NONAME")
-                        }.sheet(isPresented: $showModalView) {
-                            UserInfoView(user: user)
+                            Text(user.user.name ?? "NONAME")
                         }
-                    }.onDelete(perform: viewModel.deleteUser)
+                    }.onDelete(perform: deleteUser)
                 }
             }
             .navigationTitle(Text("Users"))
+        }.onAppear {
+            viewModel.getAllUsers()
         }
     }
 }
