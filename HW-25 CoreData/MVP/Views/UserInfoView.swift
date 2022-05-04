@@ -22,43 +22,50 @@ struct UserInfoView: View {
     
     var body: some View {
         NavigationView {
-            
-            if self.isEdit == true {
-// MARK: - РЕЖИМ РЕДАКТИРОВАНИЯ ИНФОРМАЦИИ
+            VStack {
+                Image("EXKx77VHXm4")
+                    .resizable()
+                    .frame(width: 200, height: 200, alignment: .center)
+                    .clipShape(Circle())
+                    .padding()
                 VStack {
-                    Image("EXKx77VHXm4")
-                        .resizable()
-                        .frame(width: 200, height: 200, alignment: .center)
-                        .clipShape(Circle())
-                        .padding()
-                    VStack {
-                        HStack {
-                            Image(systemName: "person")
-                                .resizable()
-                                .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 10, trailing: 10))
+                    HStack {
+                        Image(systemName: "person")
+                            .resizable()
+                            .frame(width: 25, height: 25, alignment: .center)
+                            .padding(.init(top: 0, leading: 0, bottom: 10, trailing: 10))
+                        if self.isEdit == true {
                             TextField(user.name ?? "NO NAME", text: $textFieldText)
+                        } else {
+                            Text(user.name ?? "NO NAME")
+                            Spacer()
                         }
-                        Divider()
-                    }.padding()
-                    VStack {
-                        HStack {
-                            Image(systemName: "calendar")
-                                .resizable()
-                                .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
+                    }
+                    Divider()
+                }.padding()
+                VStack {
+                    HStack {
+                        Image(systemName: "calendar")
+                            .resizable()
+                            .frame(width: 25, height: 25, alignment: .center)
+                            .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
+                        if self.isEdit == true {
                             Text(user.date ?? "NO DATE")
                             DatePicker("", selection: $date, displayedComponents: .date)
+                        } else {
+                            Text(user.date ?? "NO DATE")
+                            Spacer()
                         }
-                        
-                        Divider()
-                    }.padding()
-                    VStack(alignment: .leading) {
-                        HStack() {
-                            Image(systemName: "person.2.circle")
-                                .resizable()
-                                .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
+                    }
+                    Divider()
+                }.padding()
+                VStack(alignment: .leading) {
+                    HStack() {
+                        Image(systemName: "person.2.circle")
+                            .resizable()
+                            .frame(width: 25, height: 25, alignment: .center)
+                            .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
+                        if self.isEdit == true {
                             Text(user.gender ?? "NO GENDER")
                             Spacer()
                             Picker(selection: $genderChoice, label: Text("Gender")) {
@@ -66,23 +73,28 @@ struct UserInfoView: View {
                                     Text(self.genderArray[$0])
                                 }
                             }
+                        } else {
+                            Text("Gender")
+                            Spacer()
+                            Text(user.gender ?? "NO GENDER")
                         }
-                        Divider()
-                    }.padding()
-                    Spacer()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            Image(systemName: "arrow.backward")
-                        }
-                        
                     }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        ZStack {
-                            Button {
+                    Divider()
+                }.padding()
+                Spacer()
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "arrow.backward")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ZStack {
+                        Button {
+                            if self.isEdit == true {
                                 viewModel.updateUser(user: user) { user in
                                     if !textFieldText.isEmpty {
                                         user.name = textFieldText
@@ -95,7 +107,11 @@ struct UserInfoView: View {
                                     }
                                 }
                                 self.isEdit.toggle()
-                            } label: {
+                            } else {
+                                self.isEdit.toggle()
+                            }
+                        } label: {
+                            if self.isEdit == true {
                                 Text("Save")
                                     .padding()
                                     .overlay {
@@ -103,70 +119,7 @@ struct UserInfoView: View {
                                             .stroke(Color.black, lineWidth: 2)
                                             .frame(width: 90, height: 40, alignment: .center)
                                     }
-                            }
-                        }.padding()
-                    }
-                }
-                
-            } else if self.isEdit == false {
-// MARK: - РЕЖИМ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ
-                VStack {
-                    Image("EXKx77VHXm4")
-                        .resizable()
-                        .frame(width: 200, height: 200, alignment: .center)
-                        .clipShape(Circle())
-                        .padding()
-                    VStack {
-                        HStack {
-                            Image(systemName: "person")
-                                .resizable()
-                                .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                            Text(user.name ?? "NO NAME")
-                            Spacer()
-                        }
-                        Divider()
-                    }.padding()
-                    VStack {
-                        HStack {
-                            Image(systemName: "calendar")
-                                .resizable()
-                                .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                            Text(user.date ?? "NO DATE")
-                            Spacer()
-                        }
-                        Divider()
-                    }.padding()
-                    VStack(alignment: .leading) {
-                        HStack() {
-                            Image(systemName: "person.2.circle")
-                                .resizable()
-                                .frame(width: 25, height: 25, alignment: .center)
-                                .padding(.init(top: 0, leading: 0, bottom: 0, trailing: 10))
-                            Text("Gender")
-                            Spacer()
-                            Text(user.gender ?? "NO GENDER")
-                        }
-                        Divider()
-                    }.padding()
-                    Spacer()
-                }
-
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            Image(systemName: "arrow.backward")
-                        }
-                        
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        ZStack {
-                            Button {
-                                self.isEdit.toggle()
-                            } label: {
+                            } else {
                                 Text("Edit")
                                     .padding()
                                     .overlay {
@@ -175,8 +128,8 @@ struct UserInfoView: View {
                                             .frame(width: 90, height: 40, alignment: .center)
                                     }
                             }
-                        }.padding()
-                    }
+                        }
+                    }.padding()
                 }
             }
         }
