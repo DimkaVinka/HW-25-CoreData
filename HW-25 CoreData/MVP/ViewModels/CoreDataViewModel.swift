@@ -9,47 +9,71 @@ import Foundation
 import CoreData
 
 class CoreDataViewModel: ObservableObject {
-    var name: String = ""
-    var birthdate: Date = .now
-    var gender: Float = 2
-    @Published var users: [UserViewModel] = []
+    let container: NSPersistentContainer
+    @Published var savedEntities: [User] = []
     
-    func save() {
-        let user = User(context: CoreDataManager.shared.viewContext)
-        user.name = name
-        user.birthdate = birthdate
-        user.gender = gender
-        CoreDataManager.shared.save()
-    }
-    
-    func getAllUsers() {
-        users = CoreDataManager.shared.getAllUsers().map(UserViewModel.init)
-    }
-    
-    func delete(_ user: UserViewModel) {
-        let existingUser = CoreDataManager.shared.getUserByID(id: user.id)
-        if let existingUser = existingUser {
-            CoreDataManager.shared.deleteUser(user: existingUser)
+    init() {
+        container = NSPersistentContainer(name: "UserModel")
+        container.loadPersistentStores { description, error in
+            if let error = error {
+                print("ERROR TO LOAD CD Container: \(error)")
+            } else {
+                print("Successfuly load core data!")
+            }
         }
+        fetchUsers()
+    }
+    
+    func fetchUsers() {
+        let request = NSFetchRequest<User>(entityName: "User")
+        
+        do {
+            savedEntities = try container.viewContext.fetch(request)
+        } catch let error {
+            print("Error fetching: \(error)")
+        }
+    }
+    
+    func addUser(name: String, gender: String, date: String) {
+        let newUser = User(context: container.viewContext)
+        newUser.name = name
+        newUser.gender = gender
+        newUser.date = date
+        saveData()
+    }
+    
+    func deleteUser(indexSet: IndexSet) {
+        guard let index = indexSet.first else { return }
+        let entity = savedEntities[index]
+        container.viewContext.delete(entity)
+        saveData()
+    }
+    
+    func updateUser(user: User, _ complitionHandler: @escaping ((User) -> Void)) {
+        complitionHandler(user)
+        saveData()
+    }
+    
+    func saveData() {
+        do {
+            try container.viewContext.save()
+            fetchUsers()
+        } catch let error {
+            print("Saving error: \(error)")
+        }
+    }
+    
+    func convertDateToString(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.YYYY"
+        return dateFormatter.string(from: date)
+    }
+    
+    func convertStringToDate(string: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd.MM.YYYY"
+        return dateFormatter.date(from: string) ?? .now
     }
 }
 
-struct UserViewModel {
-    var user: User
-    
-    var id: NSManagedObjectID {
-        return user.objectID
-    }
-    
-    var name: String {
-        return user.name ?? "NONAME"
-    }
-    
-    var birthdate: Date {
-        return user.birthdate ?? .now
-    }
-    
-    var gender: Float {
-        return user.gender
-    }
-}
+

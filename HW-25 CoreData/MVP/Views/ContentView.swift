@@ -9,53 +9,51 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @StateObject private var viewModel = CoreDataViewModel()
+    @StateObject var vm = CoreDataViewModel()
+    @State var textFieldText: String = ""
+//    @State var birthday: Date = .now
+//    @State var date: String = "01.04.1976"
+//    @State var gender = "Other"
     
-    func deleteUser(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let user = viewModel.users[index]
-            viewModel.delete(user)
-        }
-        viewModel.getAllUsers()
-    }
-        
     var body: some View {
         NavigationView {
-            VStack {
-                TextField("Type your name here", text: $viewModel.name)
-                    .textFieldStyle(.roundedBorder)
-                    .padding()
+            VStack(spacing: 20) {
+                TextField("Print your name here", text: $textFieldText)
+                    .font(.headline)
+                    .padding(.leading)
+                    .frame(height: 50)
+                    .background(Color(UIColor.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
                 Button {
-                    guard !viewModel.name.isEmpty else { return }
-                    viewModel.save()
-                    viewModel.getAllUsers()
+                    guard !textFieldText.isEmpty else { return }
+                    vm.addUser(name: textFieldText, gender: "Other", date: "01.04.1976")
+                    textFieldText = ""
                 } label: {
-                    VStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .frame(maxWidth: .infinity, maxHeight: 50)
-                                .padding(.horizontal)
-                            Text("Press to add new user")
-                                .foregroundColor(.white)
-                                .font(.system(size: 20, weight: .medium, design: .rounded))
-                            
-                        }
-                        Spacer().frame(height: 20)
-                    }
-                }
+                    Text("Press")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }.padding(.horizontal)
                 List {
-                    ForEach(viewModel.users, id: \.id) { user in
-                        NavigationLink {
-                            UserInfoView(user: user, viewModel: viewModel)
-                        } label: {
-                            Text(user.user.name ?? "NONAME")
+                    ForEach(vm.savedEntities) { user in
+                        HStack {
+                            Text(user.name ?? "NONAME")
+                            NavigationLink {
+                                UserInfoView(viewModel: vm, user: user)
+                            } label: {
+                                
+                            }
                         }
-                    }.onDelete(perform: deleteUser)
+                    }
+                    .onDelete(perform: vm.deleteUser)
                 }
+                .listStyle(InsetGroupedListStyle())
             }
             .navigationTitle(Text("Users"))
-        }.onAppear {
-            viewModel.getAllUsers()
         }
     }
 }
