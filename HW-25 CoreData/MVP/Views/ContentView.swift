@@ -11,9 +11,6 @@ struct ContentView: View {
     
     @StateObject var vm = CoreDataViewModel()
     @State var textFieldText: String = ""
-//    @State var birthday: Date = .now
-//    @State var date: String = "01.04.1976"
-//    @State var gender = "Other"
     
     var body: some View {
         NavigationView {
@@ -44,6 +41,8 @@ struct ContentView: View {
                             Text(user.name ?? "NONAME")
                             NavigationLink {
                                 UserInfoView(viewModel: vm, user: user)
+                                    .navigationBarBackButtonHidden(true)
+                                    .navigationBarTitleDisplayMode(.inline)
                             } label: {
                                 
                             }
