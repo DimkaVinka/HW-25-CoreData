@@ -9,74 +9,48 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var name = ""
-    @State private var showModalView = false
-    private var birthdateDate = Date()
-    private var gendersIndex: Float = 0
+    @StateObject var vm = CoreDataViewModel()
+    @State var textFieldText: String = ""
     
-    @Environment(\.managedObjectContext) private var viewContext
-    @FetchRequest(entity: User().entity, sortDescriptors: [NSSortDescriptor(key: "name", ascending: false)]) private var allUsers: FetchedResults<User>
-    
-    private func saveUser() {
-        do {
-            let user = User(context: viewContext)
-            user.name = name
-            user.birthdate = birthdateDate
-            user.gender = gendersIndex
-            try viewContext.save()
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
-    
-    private func deleteTask(at offset: IndexSet) {
-        offset.forEach { index in
-            let user = allUsers[index]
-            viewContext.delete(user)
-            
-            do {
-                try viewContext.save()
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-    }
-        
     var body: some View {
         NavigationView {
-            VStack {
-                TextField("Type your name here", text: $name)
-                    .textFieldStyle(.roundedBorder)
-                    
-                    .padding()
+            VStack(spacing: 20) {
+                TextField("Print your name here", text: $textFieldText)
+                    .font(.headline)
+                    .padding(.leading)
+                    .frame(height: 50)
+                    .background(Color(UIColor.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.horizontal)
                 Button {
-                    saveUser()
+                    guard !textFieldText.isEmpty else { return }
+                    vm.addUser(name: textFieldText, gender: "Other", date: "01.04.1976")
+                    textFieldText = ""
                 } label: {
-                    VStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .frame(maxWidth: .infinity, maxHeight: 50)
-                                .padding(.horizontal)
-                            Text("Press to add new user")
-                                .foregroundColor(.white)
-                                .font(.system(size: 20, weight: .medium, design: .rounded))
-                            
-                        }
-                        Spacer().frame(height: 20)
-                    }
-                }
+                    Text("Press")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(height: 50)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }.padding(.horizontal)
                 List {
-                    
-                    ForEach(allUsers) { user in
-                        Button {
-                            self.showModalView.toggle()
-                        } label: {
-                            Text(user.name ?? "ERROR DATA")
-                        }.sheet(isPresented: $showModalView) {
-                            UserInfoView(name: name, birthdateDate: birthdateDate, gendersIndex: gendersIndex)
+                    ForEach(vm.savedEntities) { user in
+                        HStack {
+                            Text(user.name ?? "NONAME")
+                            NavigationLink {
+                                UserInfoView(viewModel: vm, user: user)
+                                    .navigationBarBackButtonHidden(true)
+                                    .navigationBarTitleDisplayMode(.inline)
+                            } label: {
+                                
+                            }
                         }
                     }
+                    .onDelete(perform: vm.deleteUser)
                 }
+                .listStyle(InsetGroupedListStyle())
             }
             .navigationTitle(Text("Users"))
         }
@@ -85,8 +59,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let persistentContainer = CoreDataManager.shared.persistentContainer
         ContentView()
-            .environment(\.managedObjectContext, persistentContainer.viewContext)
     }
 }
